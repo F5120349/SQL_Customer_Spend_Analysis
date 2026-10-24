@@ -10,12 +10,11 @@ SELECT
 	CONCAT(c.CompanyName, ' (', c.FirstName, ' ', c.LastName, ')') AS CustomerAndContact,
 	ROUND(SUM(soh.TotalDue), 2) AS TotalLifetimeSpend,
 	COUNT(DISTINCT(soh.SalesOrderID)) AS TotalOrders,
-	SUM(soh.TotalDue) - (SELECT AVG(TotalDue) FROM SalesLT.SalesOrderHeader) AS SpendvsAverageOrder
-
-
+	CAST(SUM(soh.TotalDue) - (SELECT AVG(TotalDue) FROM SalesLT.SalesOrderHeader) 
+	AS DECIMAL(10, 2)) AS SpendvsAverageOrder
+	
 -- Selecting the SalesOrderHeader table to get order details
 FROM SalesLT.SalesOrderHeader AS soh
-
 
 -- Joining the SalesOrderHeader table with the Customer table to get customer details
 INNER JOIN SalesLT.Customer AS c 
@@ -31,7 +30,6 @@ GROUP BY
 /* Filtering the results to only include customers with more than one order
 and nothing should return since in this database they all have 1 order each */
 HAVING COUNT(DISTINCT(soh.SalesOrderID)) > 0
-
-
+	
 -- Ordering the results by total lifetime spend in descending order to see the highest spenders first
 ORDER BY TotalLifetimeSpend DESC;
